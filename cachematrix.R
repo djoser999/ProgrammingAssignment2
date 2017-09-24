@@ -3,32 +3,50 @@
 
 ## Write a short comment describing this function
 
-makeCacheMatrix <- function(x = matrix()) {
-  solved <- NULL
-  set <- function(y) {
-    x <<- y
-    solved <<- NULL
+#This function takes a matrix and returns 
+# a list of four functions: set, get, setInverse, and getInverse.
+#Set assigns a new matrix as the inputs and NULL as the inverse,
+#Get simply returns the input matrix
+#setInverse assign a value to the cached value of the inverse
+#getInverse returns the cached value of the inverse
+makeCacheMatrix <- function(m = matrix()) {
+  inverse <- NULL
+  set <- function(newMatrix) {
+    m <<- newMatrix
+    inverse <<- NULL
   }
-  get <- function() x
-  setSolved <- function(solved) inv <<- solved
-  getSolved <- function() solved
-  list(set = set, get = get,
-       setSolved = setSolved,
-       getSolved = getSolved)
+  get <- function() {
+    m
+  }
+  setInverse <- function(newInverse) {
+    inverse <<- newInverse
+  }
+  getInverse <- function() {
+    inverse
+  }
+  
+  list(set = set, 
+       get = get,
+       setInverse = setInverse,
+       getInverse = getInverse)
 }
 
 
 ## Write a short comment describing this function
-
-cacheSolve <- function(x, ...) {
-  inv <- x$getSolved()
-  if(!is.null(inv)) {
+#This function takes a cached matrix as defined in the makeCacheMatrix function
+#It first checks if the "inverse" value on the cached matrix; if it is not NULL, it returns it
+#Otherwise, it calls the built in "solve" function to inverse the input matrix.
+#Before returning it, it sets the results into cache by calling setInverse, so the next time
+#we call it, we don't need to compute the value again.
+cacheSolve <- function(cacheMatrix, ...) {
+  inverse <- cacheMatrix$getInverse()
+  if(!is.null(inverse)) {
     message("getting cached data")
-    return(inv)
+    return(inverse)
   }
-  data <- x$get()
-  inv <- solve(data, ...)
-  x$setSolved(inv)
-  inv  
-          ## Return a matrix that is the inverse of 'x'
+  matrix <- cacheMatrix$get()
+  inverse <- solve(matrix, ...)
+  cacheMatrix$setInverse(inverse)
+  ## Return a matrix that is the inverse of 'm'
+  inverse
 }
